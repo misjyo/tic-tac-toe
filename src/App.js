@@ -2,6 +2,9 @@ import './App.css';
 import { useEffect } from 'react';
 import { connect, Provider } from 'react-redux';
 import { createStore } from 'redux';
+import { ToastContainer, toast } from 'react-toastify';
+
+
 
 // REDUX: Initial State
 const initial_state = {
@@ -35,6 +38,7 @@ function App() {
       <Provider store={store}>
         <BoardContainer></BoardContainer>
       </Provider>
+      <ToastContainer />
     </div>
   );
 }
@@ -80,16 +84,22 @@ function Board({marks, player,gameOver,setGameOver,setMarks,setPlayer}) {
     for (let c of combinations) {
       if (marks[c[0]] === 1 && marks[c[1]] === 1 && marks[c[2]] === 1) {
         console.log('player 1 wins');
+        toast.success('Player 1 wins!', { autoClose: 3000 });
         setGameOver(true)
       }
       if (marks[c[0]] === 2 && marks[c[1]] === 2 && marks[c[2]] === 2) {
+        toast.success('Player 2 wins!', { autoClose: 3000 });
         console.log('player 2 wins');
         setGameOver(true)
       }
     }
+    if (!marks.includes(0)) {
+      toast.info('Game ends in a draw!', { autoClose: 3000 });
+      setGameOver(true);
+    }
   },
   // eslint-disable-next-line
-  [marks]);
+  [marks, setGameOver]);
 
   const changeMark = (i) => {
     const m = [...marks];
@@ -97,8 +107,9 @@ function Board({marks, player,gameOver,setGameOver,setMarks,setPlayer}) {
       m[i] = player;
       setMarks(m);
       setPlayer(player === 1 ? 2 : 1);
-    } else {
-      alert('please click on empty blocks');
+    } 
+    if (gameOver) {
+      toast.info('Game over!');
     }
   };
 
